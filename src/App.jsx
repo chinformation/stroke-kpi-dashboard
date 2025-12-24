@@ -106,6 +106,27 @@ const dataCT40_2567 = [
   { month: 'ส.ค.', percent: 0.00 },
   { month: 'ก.ย.', percent: 71.43 },
 ];
+const dataCT40_2569 = [
+  { month: 'ต.ค.', percent: 100.00 },
+  { month: 'พ.ย.', percent: null },
+  { month: 'ธ.ค.', percent: null },
+  { month: 'ม.ค.', percent: null },
+  { month: 'ก.พ.', percent: null },
+  { month: 'มี.ค.', percent: null },
+  { month: 'เม.ย.', percent: null },
+  { month: 'พ.ค.', percent: null },
+  { month: 'มิ.ย.', percent: null },
+  { month: 'ก.ค.', percent: null },
+  { month: 'ส.ค.', percent: null },
+  { month: 'ก.ย.', percent: null },
+];
+const dataCT40Merged = dataCT40_2567.map((item, index) => ({
+  month: item.month,
+
+  percent2567: item.percent,
+  percent2568: dataCT40_2568[index]?.percent ?? null,
+  percent2569: dataCT40_2569[index]?.percent ?? null,
+}));
 const dataLab45_2568 = [
   { month: 'ต.ค.', percent: 77.78 },
   { month: 'พ.ย.', percent: 100.00 },
@@ -143,8 +164,7 @@ const dataLab45_2567 = [
   return (
     <div className="dashboard-page">
       <div className="dashboard-credit">
-        พัฒนาโดย <strong>ทีมอายุรแพทย์ระบบประสาท</strong> และ
-        <strong> งานสารสนเทศโรงพยาบาล</strong>
+        dashboard credit: <strong>Neurology team & Hospital IT</strong> 
       </div>
       <div className="dashboard-container">
 
@@ -353,15 +373,20 @@ const dataLab45_2567 = [
                 <div className="kpi-value">55.38%</div>
               </div>
 
-              <div className="kpi-card highlight">
+              <div className="kpi-card">
                 <div className="kpi-label">ค่าเฉลี่ย ปี 2568</div>
-                <div className="kpi-value primary">67.41%</div>
+                <div className="kpi-value">67.41%</div>
+              </div>
+
+              <div className="kpi-card highlight">
+                <div className="kpi-label">ค่าเฉลี่ย ปี 2569</div>
+                <div className="kpi-value primary">100%</div>
               </div>
             </div>
 
             {/* Chart */}
             <ResponsiveContainer width="100%" height={360}>
-              <LineChart>
+              <LineChart data={dataCT40Merged}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis
                   dataKey="month"
@@ -382,9 +407,8 @@ const dataLab45_2567 = [
                 />
 
                 <Line
-                  data={dataCT40_2567}
                   name="ปี 2567"
-                  dataKey="percent"
+                  dataKey="percent2567"
                   stroke="#94a3b8"
                   strokeWidth={3}
                   strokeDasharray="4 4"
@@ -392,12 +416,20 @@ const dataLab45_2567 = [
                 />
 
                 <Line
-                  data={dataCT40_2568}
                   name="ปี 2568"
-                  dataKey="percent"
+                  dataKey="percent2568"
                   stroke="#2563eb"
                   strokeWidth={4}
                   dot={{ r: 6 }}
+                />
+
+                <Line
+                  name="ปี 2569"
+                  dataKey="percent2569"
+                  stroke="#22c55e"
+                  strokeWidth={4}
+                  dot={{ r: 6 }}
+                  connectNulls={false}
                 />
               </LineChart>
             </ResponsiveContainer>
