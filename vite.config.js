@@ -3,5 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/kpi-stroke-dashboard/', // 👈 ชื่อ repo
+  base: '/stroke-kpi-dashboard/',
+  build: {
+    outDir: 'docs'
+  }
 })
