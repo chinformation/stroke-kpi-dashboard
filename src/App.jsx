@@ -142,6 +142,10 @@ const dataLab45_2567 = [
 
   return (
     <div className="dashboard-page">
+      <div className="dashboard-credit">
+        พัฒนาโดย <strong>ทีมอายุรแพทย์ระบบประสาท</strong> และ
+        <strong> งานสารสนเทศโรงพยาบาล</strong>
+      </div>
       <div className="dashboard-container">
 
         {/* HEADER */}
