@@ -22,7 +22,8 @@ const App = () => {
     { month: 'ส.ค.', year2567: 0,   year2568: 0 },
     { month: 'ก.ย.', year2567: 75,  year2568: 100 },
   ];
-  const dataDoorToCT = [
+// ปีงบประมาณ 2568
+const dataDoorToCT_2568 = [
   { month: 'ต.ค.', fast: 12, total: 16, percent: 75 },
   { month: 'พ.ย.', fast: 3,  total: 8,  percent: 38 },
   { month: 'ธ.ค.', fast: 4,  total: 8,  percent: 50 },
@@ -36,6 +37,46 @@ const App = () => {
   { month: 'ส.ค.', fast: 11, total: 23, percent: 48 },
   { month: 'ก.ย.', fast: 5,  total: 11, percent: 45 },
 ];
+// ปีงบประมาณ 2569 (ตอนนี้มีแค่ ต.ค.)
+const dataDoorToCT_2569 = [
+  { month: 'ต.ค.', fast: 9, total: 10, percent: 80 },
+  { month: 'พ.ย.', fast: null, total: null, percent: null },
+  { month: 'ธ.ค.', fast: null, total: null, percent: null },
+  { month: 'ม.ค.', fast: null, total: null, percent: null },
+  { month: 'ก.พ.', fast: null, total: null, percent: null },
+  { month: 'มี.ค.', fast: null, total: null, percent: null },
+  { month: 'เม.ย.', fast: null, total: null, percent: null },
+  { month: 'พ.ค.', fast: null, total: null, percent: null },
+  { month: 'มิ.ย.', fast: null, total: null, percent: null },
+  { month: 'ก.ค.', fast: null, total: null, percent: null },
+  { month: 'ส.ค.', fast: null, total: null, percent: null },
+  { month: 'ก.ย.', fast: null, total: null, percent: null },
+];
+
+// ================= MERGE DATA =================
+const dataDoorToCTMerged = dataDoorToCT_2568.map((item, index) => ({
+  month: item.month,
+
+  // ปี 2568
+  percent2568: item.percent,
+  fast2568: item.fast,
+  total2568: item.total,
+
+  // ปี 2569
+  percent2569: dataDoorToCT_2569[index]?.percent ?? null,
+  fast2569: dataDoorToCT_2569[index]?.fast ?? null,
+  total2569: dataDoorToCT_2569[index]?.total ?? null,
+}));
+
+// ค่าเฉลี่ย YTD ปี 2569 (คิดเฉพาะเดือนที่มีข้อมูล)
+const avg2569YTD = (
+  dataDoorToCT_2569
+    .filter(d => d.percent !== null)
+    .reduce((sum, d) => sum + d.percent, 0) /
+  dataDoorToCT_2569.filter(d => d.percent !== null).length
+).toFixed(1);
+
+
 
 const dataCT40_2568 = [
   { month: 'ต.ค.', percent: 88.89 },
@@ -208,29 +249,37 @@ const dataLab45_2567 = [
                 <div className="kpi-value">&ge; 60%</div>
               </div>
 
-              <div className="kpi-card highlight">
-                <div className="kpi-label">ค่าเฉลี่ย ปี 2568</div>
-                <div className="kpi-value primary">57.2%</div>
+              <div className="kpi-card">
+                <div className="kpi-label">ค่าเฉลี่ย ปี 2568(YTD)</div>
+                <div className="kpi-value">57.2%</div>
               </div>
 
-              <div className="kpi-card">
-                <div className="kpi-label">สถานะ</div>
-                <div className="kpi-value" style={{ color: '#dc2626' }}>
-                  ต่ำกว่าเป้าหมาย
-                </div>
+              <div className="kpi-card highlight">
+                <div className="kpi-label">ค่าเฉลี่ย ปี 2569 (YTD)</div>
+                <div className="kpi-value primary">{avg2569YTD}%</div>
               </div>
             </div>
 
             {/* Chart */}
             <ResponsiveContainer width="100%" height={360}>
-              <LineChart data={dataDoorToCT}>
+              <LineChart data={dataDoorToCTMerged}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis domain={[0, 100]} />
-                <Tooltip
-                  formatter={(v, _, p) => [`${v}%`, 'ร้อยละ']}
-                  labelFormatter={(l) => `เดือน ${l}`}
+
+                <XAxis
+                  dataKey="month"
+                  interval={0}
+                  allowDuplicatedCategory={false}
                 />
+
+                <YAxis domain={[0, 100]} />
+
+                <Tooltip
+                  formatter={(value) =>
+                    value === null ? ['ยังไม่มีข้อมูล', ''] : [`${value}%`, 'ร้อยละ']
+                  }
+                  labelFormatter={(label) => `เดือน ${label}`}
+                />
+
                 <Legend />
 
                 <ReferenceLine
@@ -240,23 +289,37 @@ const dataLab45_2567 = [
                   label={{ value: 'เป้าหมาย 60%', fill: '#dc2626', fontSize: 11 }}
                 />
 
+                {/* ปีงบประมาณ 2568 */}
                 <Line
-                  name="Door-to-CT ≤ 25 นาที"
-                  dataKey="percent"
+                  name="ปีงบประมาณ 2568"
+                  dataKey="percent2568"
                   stroke="#2563eb"
                   strokeWidth={4}
+                  dot={{ r: 5 }}
+                />
+
+                {/* ปีงบประมาณ 2569 (YTD) */}
+                <Line
+                  name="ปีงบประมาณ 2569 (YTD)"
+                  dataKey="percent2569"
+                  stroke="#22c55e"
+                  strokeWidth={4}
+                  strokeDasharray="6 6"
                   dot={{ r: 6 }}
+                  connectNulls={false}
                 />
               </LineChart>
             </ResponsiveContainer>
 
             {/* Insight */}
             <div className="chart-footnote">
-              <CheckCircle2 size={16} color="#64748b" />
-              ค่าเฉลี่ยทั้งปีต่ำกว่าเกณฑ์ ควรพัฒนา flow ER → CT เพื่อสนับสนุน rtPA
+              ปี 2569 มีผลการดำเนินงานช่วงต้นปีสูงกว่าเกณฑ์ (ข้อมูลถึง ต.ค.)
             </div>
+
           </div>
           {/* ================= KPI #2 : Door-to-CT ≤ 25 นาที ================= */}
+
+
 
           {/* ================= KPI #3 : CT Brain ≤ 40 นาที (Stroke Fast Track) ================= */}
           <div className="chart-card">
